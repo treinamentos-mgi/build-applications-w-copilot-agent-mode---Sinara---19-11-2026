@@ -65,7 +65,10 @@ Comandos executados e o significado de cada falha observada na última execuçã
 
 Resultado da última execução:
 
-- Dados: 4 de 5 testes falham. Os modelos `User`, `Team`, `Activity` e `Workout` ainda não rejeitam documentos sem campos obrigatórios. O teste de seed passa.
-- API: 4 testes falham. Criar equipe sem nome retorna `501` em vez de `400`, pois a rota ainda não está implementada. O placar retorna `[]` em vez do ranking esperado. As sugestões retornam `Circuito de força` com foco `strength`, e não `Intervalos` com foco `endurance`. Um quarto teste não foi identificado, pois a saída foi truncada.
-- Frontend: 15 de 15 testes falham. As páginas exibem o placeholder "Implementação pendente" e não o estado de alerta esperado pelos testes.
-- Compilações: não executadas nesta rodada.
+Última execução do backend (`npm test --prefix octofit-tracker/backend`): 9 de 9 testes passam.
+
+- Dados: 5 de 5 testes passam. Os modelos `User`, `Team`, `Activity` e `Workout` rejeitam documentos sem campos obrigatórios, e o seed é idempotente.
+- API: 4 de 4 testes passam. Os quatro contratos são: atividades (criação válida com 201, entradas inválidas com 4xx), equipes (400 sem nome e 201 com integrantes), placar (ordem decrescente por pontos) e sugestões (foco por atividade recente ou meta, e 4xx para e-mail desconhecido).
+- Compilação do backend (`npm run build --prefix octofit-tracker/backend`): passa sem erros de tipo.
+- Frontend: 15 de 15 testes falharam na última execução registrada, pois as páginas exibiam o placeholder "Implementação pendente". Ainda não foi executado após as mudanças do backend.
+- Compilação do frontend: não executada nesta rodada.
