@@ -1,3 +1,4 @@
+// Contrato do seed: seed() deve rodar idempotently (sem duplicar) e preservar o registro sentinel.
 import { describe, expect, it } from 'vitest';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
