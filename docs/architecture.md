@@ -45,20 +45,27 @@ flowchart LR
 
 Registre seu plano aqui antes de editar o código.
 
-- Decisão da camada de apresentação:
-- Decisão da camada de lógica:
-- Decisão da camada de dados:
-- Abordagem para registro de atividades:
-- Abordagem para gerenciamento de equipes:
-- Abordagem para o placar:
-- Abordagem para sugestões de treino:
+- Decisão da camada de apresentação: as páginas React consomem apenas o cliente compartilhado de `/api` por caminho relativo, sem regras de negócio nos componentes; cada página substitui o placeholder "Implementação pendente" somente depois que o endpoint correspondente estiver pronto.
+- Decisão da camada de lógica: as rotas Express delegam as regras para serviços em TypeScript, que validam as entradas e devolvem erros 4xx intencionais, impedindo que erros de conversão de ID virem 500.
+- Decisão da camada de dados: os modelos Mongoose (`User`, `Team`, `Activity`, `Workout`) declaram os campos obrigatórios e as referências, e a persistência ocorre somente por esses modelos e pelo seed em `src/scripts/seed.ts`, sem scripts diretos no MongoDB.
+- Abordagem para registro de atividades: o POST valida `userId` e `teamId` como IDs bem-formados de pessoa e equipe existentes, valida `type` e `minutes`, calcula `points` e `occurredAt` no serviço e armazena `user`, `team`, `type` e `minutes` como enviados.
+- Abordagem para gerenciamento de equipes: o POST rejeita uma equipe sem `name` com `400`, por meio da validação do modelo `Team`, e o GET lista as equipes preservando `name`, `mascot` e os integrantes enviados.
+- Abordagem para o placar: as atividades são agregadas por equipe, somando `points` no banco, ordenadas do maior para o menor total, com `rank` iniciando em 1 e a resposta contendo `teamName`, `totalPoints` e `rank`.
+- Abordagem para sugestões de treino: a pessoa é localizada pelo e-mail (retornando 404 se ausente), suas atividades recentes e `fitnessGoal` definem o `focus` da primeira sugestão, e o `reason` explica esse motivo.
 
 ## Plano de testes
 
-Registre os comandos executados e o significado de cada falha.
+Comandos executados e o significado de cada falha observada na última execução.
 
 - Testes da camada de dados: `npm run test:data --prefix octofit-tracker/backend`
 - Testes da API: `npm run test:api --prefix octofit-tracker/backend`
 - Testes do frontend: `npm test --prefix octofit-tracker/frontend`
 - Compilação do backend: `npm run build --prefix octofit-tracker/backend`
 - Compilação do frontend: `npm run build --prefix octofit-tracker/frontend`
+
+Resultado da última execução:
+
+- Dados: 4 de 5 testes falham. Os modelos `User`, `Team`, `Activity` e `Workout` ainda não rejeitam documentos sem campos obrigatórios. O teste de seed passa.
+- API: 4 testes falham. Criar equipe sem nome retorna `501` em vez de `400`, pois a rota ainda não está implementada. O placar retorna `[]` em vez do ranking esperado. As sugestões retornam `Circuito de força` com foco `strength`, e não `Intervalos` com foco `endurance`. Um quarto teste não foi identificado, pois a saída foi truncada.
+- Frontend: 15 de 15 testes falham. As páginas exibem o placeholder "Implementação pendente" e não o estado de alerta esperado pelos testes.
+- Compilações: não executadas nesta rodada.
