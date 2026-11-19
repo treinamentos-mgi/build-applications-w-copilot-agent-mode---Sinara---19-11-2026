@@ -282,6 +282,16 @@ test('data grader accepts the Mongoose array form of required validation', () =>
   assert.throws(() => checks['step2-data'](root), /Team schema must include required validation/);
 });
 
+test('data grader accepts the protected Portuguese seed contract and still requires idempotence', () => {
+  const root = completedFixture();
+  const contract = 'octofit-tracker/backend/tests/data.contract.test.ts';
+  const text = fs.readFileSync(path.join(repositoryRoot, contract), 'utf8');
+  write(root, contract, text);
+  assert.doesNotThrow(() => checks['step2-data'](root));
+  write(root, contract, text.replace('idempotente', 'repetível'));
+  assert.throws(() => checks['step2-data'](root), /Seed contract test must mention/);
+});
+
 test('protected grading contracts are verified before learner tests run', () => {
   assert.doesNotThrow(() => verifyContracts(repositoryRoot));
   const tampered = copyMetadata();
