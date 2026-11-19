@@ -1,3 +1,4 @@
+// Atividade: liga pessoa e equipe; minutos e pontos validados (sem valores negativos).
 import { Schema, model } from 'mongoose';
 
 export const activityTypes = ['run', 'cycle', 'walk', 'swim', 'strength', 'yoga'] as const;
