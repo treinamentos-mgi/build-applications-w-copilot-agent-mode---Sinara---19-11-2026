@@ -16,6 +16,27 @@ function isObjectId(value: unknown) {
   return typeof value === 'string' && mongoose.isObjectIdOrHexString(value);
 }
 
+// Rótulos em português usados apenas no texto exibido; os códigos continuam nos dados e nas consultas.
+const activityLabels: Record<string, string> = { run: 'corrida', cycle: 'ciclismo' };
+const focusLabels: Record<string, string> = { endurance: 'resistência', strength: 'força' };
+const toLabel = (labels: Record<string, string>, code: string) => labels[code] ?? code;
+
+// Erros de conversão (CastError) viram mensagem em português; mensagens do esquema são mantidas.
+const fieldLabels: Record<string, string> = {
+  minutes: 'minutos', points: 'pontos', date: 'data', type: 'tipo',
+  user: 'pessoa', team: 'equipe', name: 'nome', mascot: 'mascote', members: 'integrantes',
+};
+const validationMessage = (
+  err: { name?: string; path?: string; message: string } | undefined,
+  fallback: string,
+) => {
+  if (!err) return fallback;
+  if (err.name === 'CastError') {
+    return `Valor inválido para o campo ${fieldLabels[err.path ?? ''] ?? err.path}.`;
+  }
+  return err.message;
+};
+
 // Atividades mapeiam para um foco de treino; tipos fora desta lista usam a meta da pessoa.
 const focusByActivityType: Record<string, string> = {
   run: 'endurance',
@@ -46,7 +67,7 @@ export async function createActivity(input: unknown) {
   });
   const validationError = activity.validateSync();
   if (validationError) {
-    const firstMessage = Object.values(validationError.errors)[0]?.message ?? 'Atividade inválida';
+    const firstMessage = validationMessage(Object.values(validationError.errors)[0], 'Atividade inválida');
     throw httpError(400, firstMessage);
   }
 
@@ -71,7 +92,7 @@ export async function createTeam(input: unknown) {
   const team = new Team({ name, mascot, members });
   const validationError = team.validateSync();
   if (validationError) {
-    const firstMessage = Object.values(validationError.errors)[0]?.message ?? 'Equipe inválida';
+    const firstMessage = validationMessage(Object.values(validationError.errors)[0], 'Equipe inválida');
     throw httpError(400, firstMessage);
   }
 
