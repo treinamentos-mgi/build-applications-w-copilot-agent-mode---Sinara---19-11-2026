@@ -1,3 +1,4 @@
+// API do OctoFit: atividades, equipes, placar ordenado por pontos e sugestões de treino.
 import mongoose from 'mongoose';
 import { Activity, Team, User, Workout } from '../models/index.js';
 
