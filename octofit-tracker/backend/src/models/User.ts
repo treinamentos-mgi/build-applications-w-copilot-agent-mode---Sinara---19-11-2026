@@ -1,3 +1,4 @@
+// Pessoa usuária: nome e e-mail obrigatórios; e-mail único.
 import { Schema, model } from 'mongoose';
 
 const userSchema = new Schema({
